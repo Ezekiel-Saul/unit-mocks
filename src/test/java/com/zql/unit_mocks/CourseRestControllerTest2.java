@@ -1,18 +1,13 @@
 package com.zql.unit_mocks;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zql.unit_mocks.Entity.Course;
-import com.zql.unit_mocks.rest.CourseRestController;
 import com.zql.unit_mocks.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -39,6 +34,7 @@ class CourseRestControllerTest2{
     @BeforeEach
     void setUp() {
         course = new Course(101, "Mathematics", 2.5);
+
     }
 
     @Test
@@ -78,10 +74,11 @@ class CourseRestControllerTest2{
     @Test
     void addCourse_ShouldAddCourseSuccessfully() throws Exception {
         when(courseService.addCourse(any(Course.class))).thenReturn(course);
-
+        ObjectMapper courseObject = new ObjectMapper();
+        String courseObj = courseObject.writeValueAsString(course);
         mockMvc.perform(post("/course")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"id\":101,\"name\":\"Mathematics\",\"level\":2.5}"))
+                        .content(courseObj))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(101))
                 .andExpect(jsonPath("$.name").value("Mathematics"))
